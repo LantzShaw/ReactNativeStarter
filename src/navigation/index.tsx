@@ -1,4 +1,5 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeScreen from '../screens/Home';
 
@@ -7,7 +8,7 @@ const HomeStack = createNativeStackNavigator();
 const HomeStackScreen = () => {
   return (
     <HomeStack.Navigator>
-      <HomeStack.Screen name="home" component={HomeScreen} />
+      <HomeStack.Screen name="Home" component={HomeScreen} />
     </HomeStack.Navigator>
   );
 };
@@ -17,7 +18,7 @@ const Tab = createBottomTabNavigator();
 const HomeTab = () => {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="home" component={HomeScreen} />
+      <Tab.Screen name="HomeStack" component={HomeStackScreen} />
     </Tab.Navigator>
   );
 };
@@ -31,12 +32,16 @@ const HomeTab = () => {
 //   );
 // };
 
-const RootStack = createNativeStackNavigator();
+const AppStack = createNativeStackNavigator();
 
-const RootStackScreen = () => {
+const AppNavigationContainer = () => {
   return (
-    <RootStack.Navigator>
-      <RootStack.Screen name="home" component={HomeTab} />
-    </RootStack.Navigator>
+    <NavigationContainer>
+      <AppStack.Navigator>
+        <AppStack.Screen name="HomeTab" component={HomeTab} />
+      </AppStack.Navigator>
+    </NavigationContainer>
   );
 };
+
+export default AppNavigationContainer;
