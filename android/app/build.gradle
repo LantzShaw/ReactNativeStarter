@@ -88,17 +88,27 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+
+/**
+ * 配置參考: https://blog.csdn.net/hebbely/article/details/79074460
+ */
 android {
     ndkVersion rootProject.ext.ndkVersion
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     namespace "com.reactnativestarter"
+    // 默认配置
     defaultConfig {
+        // 应用程序的包名
         applicationId "com.reactnativestarter"
+        // 最小sdk版本，如果设备小于这个版本或者大于maxSdkVersion将无法安装这个应用
         minSdkVersion rootProject.ext.minSdkVersion
+        // 目标sdk版本，充分测试过的版本（建议版本）
         targetSdkVersion rootProject.ext.targetSdkVersion
+        // 版本号，第一版是1，之后每更新一次加1
         versionCode 1
+        // 版本名，显示给用户看到的版本号
         versionName "1.0"
     }
 
@@ -110,24 +120,60 @@ android {
             include (*reactNativeArchitectures())
         }
     }
+
+    // 签名配置
     signingConfigs {
+        // debug 版本签名配置
         debug {
+            // //密钥文件路径
             storeFile file('debug.keystore')
+            // 密钥文件密码
             storePassword 'android'
+            // key别名
             keyAlias 'androiddebugkey'
+            // key密码
             keyPassword 'android'
         }
+
+        // 发布版本签名配置
+        release {
+            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            }
+        }
     }
+
+    // 指定生成安装文件的配置，常有两个子包:release,debug，注：直接运行的都是debug安装文件
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
+
+        // release版本的配置，即生成正式版安装文件的配置
         release {
-            // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            //  zipAlignEnabled true  // 是否支持zip
+            //  shrinkResources true  // 移除无用的resource文件
+            //  minifyEnabled false // 是否对代码进行混淆，true表示混淆
+
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+
+            // ndk的一些配置
+//            ndk {
+//                // cFlags "-std=c++11 -fexceptions -O3 -D__RELEASE__" // C++11
+//                // platformVersion  = "19"
+//                moduleName "hebbewifisafe" //设置库(so)文件名称
+//                ldLibs "log", "z", "m", "jnigraphics", "android"
+//                //引入库，比如要用到的__android_log_print
+//                abiFilters "armeabi", "x86", "armeabi-v7a"//, "x86"
+//                cFlags "-std=c++11 -fexceptions" // C++11
+//                stl "gnustl_static"
+//            }
         }
     }
 
